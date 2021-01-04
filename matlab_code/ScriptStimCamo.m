@@ -19,76 +19,74 @@ clc, clear all, close all
 % Define the function parameters
 im_height = 650;
 im_width  = 650;
-
-sigma     = 15; % standard deviation of the Gaussian filter
-w1_wn     = 1; % weight of the white noise
-w2_gauss  = 26; % weight of the Gaussian filter
 plotFlag  = 0; % show the plot: 1 yes; 0 no
 
-% im_dim: 250*250; w1: 1; w2: 26; sigma: 6.5 => slope of approx -2
-% im_dim: 450*450; w1: 1; w2: 26; sigma: 10.5 => slope of approx -2
-% im_dim: 650*650; w1: 1; w2: 26; sigma: 15 => slope of approx -2
-% im_dim: 650*650; w1: 1; w2: 26; sigma: 25 => slope of approx -1
-% im_dim: 650*650; w1: 1; w2: 42; sigma: 65 => slope of approx -2.9
+sigma_BKG     = 65; % standard deviation of the Gaussian filter
+w1_wn_BKG     = 1; % weight of the white noise
+w2_gauss_BKG  = 42; % weight of the Gaussian filter
 
-% Call the function to create a white noise image and alter its slope using
+% im_dim: 650*650; sigma: 5;    w1: 1; w2: 26 => slope of approx -1
+% im_dim: 650*650; sigma: 15;   w1: 1; w2: 26 => slope of approx -2
+% im_dim: 650*650; sigma: 65;   w1: 1; w2: 42 => slope of approx -2.9
+% im_dim: 250*250; sigma: 6.5;  w1: 1; w2: 26 => slope of approx -2
+% im_dim: 450*450; sigma: 10.5; w1: 1; w2: 26 => slope of approx -2
+
+
+% 2/ Target: Determine the inner content of the target
+% target size = background image size, then select a subset of the target image and
+% add it to the background image
+
+sigma_tar     = 12; % standard deviation of the Gaussian filter
+w1_wn_tar     = 1; % weight of the white noise
+w2_gauss_tar  = 45; % weight of the Gaussian filter
+% im_dim: 650*650; sigma: 5;  w1: 1; w2: 22 => slope of approx -1
+% im_dim: 650*650; sigma: 12; w1: 1; w2: 45 => slope of approx -2
+% im_dim: 650*650; sigma: 24; w1: 1; w2: 65 => slope of approx -2.9
+
+% Create a disk mask
+target_height = 60;
+target_width  = 60;
+
+%% Call the function to create a white noise image and alter its slope using
 % a Gaussian filter. It returns the value of the Fourier slope of the modified
 % white noise image and the reconstructed image matrix.
 
-for ndx = 1:10
+for ndx = 1:5
     cd('C:\Users\preinstalled\Documents\PostDoc_Doc\');
-    [BKG_p, BKG_reconstructedImage ] = SloppyNoise(im_height, im_width, sigma, w1_wn, w2_gauss, plotFlag);
-        
-    % 2/ Target: Determine the inner content of the target
-    % target size = background image size, then select a subset of the target image and
-    % add it to the background image
     
-    sigma     = 12; % standard deviation of the Gaussian filter
-    w1_wn     = 1; % weight of the white noise
-    w2_gauss  = 45; % weight of the Gaussian filter
-    % im_dim: 650*650; w1: 1; w2: 22; sigma: 5 => slope of approx -1
-    % im_dim: 650*650; w1: 1; w2: 65; sigma: 24 => slope of approx -2.9
-    % im_dim: 650*650; w1: 1; w2: 45; sigma: 12 => slope of approx -2
-
-    [target_p, target_reconstructedImage ] = SloppyNoise(im_height, im_width, sigma, w1_wn, w2_gauss, plotFlag);
-        
-    % Create a disk mask
-    target_height = 20;
-    target_width  = 20;
+    [BKG_p, BKG_reconstructedImage ]       = SloppyNoise(im_height, im_width, sigma_BKG, w1_wn_BKG, w2_gauss_BKG, plotFlag);
+    [target_p, target_reconstructedImage ] = SloppyNoise(im_height, im_width, sigma_tar, w1_wn_tar, w2_gauss_tar, plotFlag);
     
     [columnsInImage, rowsInImage] = meshgrid(1:im_height, 1:im_width);
-    centerX = randi([0 im_height-target_height],1);
-    centerY = randi([0 im_height-target_height],1);
+    centerX = randi([0+target_height im_height-target_height],1);
+    centerY = randi([0+target_height im_height-target_height],1);
     radius = target_height/2;
     disk_mask = (rowsInImage - centerY).^2 + (columnsInImage - centerX).^2 <= radius.^2;
     
     % 3/ Stimulus: Convert reconstructed images to grayscale images
-    BKG_grayscImage = mat2gray(BKG_reconstructedImage);
+    BKG_grayscImage    = mat2gray(BKG_reconstructedImage);
     target_grayscImage = mat2gray(target_reconstructedImage);
-
-%     figure, imshow(BKG_grayscImage)
-%     figure, imshow(target_grayscImage)
     
-%     Stimulus_Image = BKG_grayscImage;
-%     Stimulus_Image(disk_mask) = target_grayscImage(disk_mask);
+    %     figure, imshow(BKG_grayscImage)
+    %     figure, imshow(target_grayscImage)
+    
+    %     Stimulus_Image = BKG_grayscImage;
+    %     Stimulus_Image(disk_mask) = target_grayscImage(disk_mask);
     
     % Assemble both background and target images to build the stimulus
     Stimulus_Image = BKG_reconstructedImage;
     Stimulus_Image(disk_mask) = target_reconstructedImage(disk_mask);
-%     figure,
-%     imshow(Stimulus_Image)
+    %     figure,
+    %     imshow(Stimulus_Image)
     Stimulus_Image_grayscImage = mat2gray(Stimulus_Image);
     
     close all
-
+    
     figure,
     img = imshow(Stimulus_Image_grayscImage);
     
-    
     cd('C:\Users\preinstalled\Documents\PostDoc_Doc\figures\');
-    %saveas(img, 'Fig-2BKG-1target.tif')
-    
-    saveas(img, sprintf('Fig-2BKG-2target%d.png',ndx));
+    saveas(img, sprintf('Fig-3BKG-2target_size60_%d.png',ndx));
     
     close all
 end
