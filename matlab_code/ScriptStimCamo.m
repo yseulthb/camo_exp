@@ -47,6 +47,9 @@ w2_gauss_tar  = 45; % weight of the Gaussian filter
 target_height = 60;
 target_width  = 60;
 
+% Select the target shape: 'disk' or 'ang_blob'
+target_shape = 'ang_blob';
+
 %% Call the function to create a white noise image and alter its slope using
 % a Gaussian filter. It returns the value of the Fourier slope of the modified
 % white noise image and the reconstructed image matrix.
@@ -61,8 +64,18 @@ for ndx = 1:5
     centerX = randi([0+target_height im_height-target_height],1);
     centerY = randi([0+target_height im_height-target_height],1);
     radius = target_height/2;
-    disk_mask = (rowsInImage - centerY).^2 + (columnsInImage - centerX).^2 <= radius.^2;
     
+    if strcmp(target_shape, 'disk')
+        disk_mask = (rowsInImage - centerY).^2 + (columnsInImage - centerX).^2 <= radius.^2; % x^2+y^2=r^2
+    elseif strcmp(target_shape, 'ang_blob')
+        bw = angular_blob(centerX, centerY, im_height,im_width);
+        disk_mask = bw;
+    else
+        fprintf('ERROR: Please specify the target shape.')
+    end
+    
+%     imshow(disk_mask)
+
     % 3/ Stimulus: Convert reconstructed images to grayscale images
     BKG_grayscImage    = mat2gray(BKG_reconstructedImage);
     target_grayscImage = mat2gray(target_reconstructedImage);
@@ -80,15 +93,15 @@ for ndx = 1:5
     %     imshow(Stimulus_Image)
     Stimulus_Image_grayscImage = mat2gray(Stimulus_Image);
     
-    close all
+%     close all
     
     figure,
     img = imshow(Stimulus_Image_grayscImage);
     
     cd('C:\Users\preinstalled\Documents\PostDoc_Doc\figures\');
-    saveas(img, sprintf('Fig-3BKG-2target_size60_%d.png',ndx));
+    saveas(img, sprintf('Fig-3BKG-2target_size60_ang_blob_%d.png',ndx));
     
-    close all
+    close
 end
 
 
