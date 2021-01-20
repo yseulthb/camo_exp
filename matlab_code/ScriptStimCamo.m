@@ -28,8 +28,6 @@ w2_gauss_BKG  = 42; % weight of the Gaussian filter
 % im_dim: 650*650; sigma: 5;    w1: 1; w2: 26 => slope of approx -1
 % im_dim: 650*650; sigma: 15;   w1: 1; w2: 26 => slope of approx -2
 % im_dim: 650*650; sigma: 65;   w1: 1; w2: 42 => slope of approx -2.9
-% im_dim: 250*250; sigma: 6.5;  w1: 1; w2: 26 => slope of approx -2
-% im_dim: 450*450; sigma: 10.5; w1: 1; w2: 26 => slope of approx -2
 
 
 % 2/ Target: Determine the inner content of the target
@@ -55,7 +53,7 @@ target_shape = 'ang_blob';
 % white noise image and the reconstructed image matrix.
 
 for ndx = 1:5
-    cd('C:\Users\preinstalled\Documents\PostDoc_Doc\');
+    cd('yourfolder\');
     
     [BKG_p, BKG_reconstructedImage ]       = SloppyNoise(im_height, im_width, sigma_BKG, w1_wn_BKG, w2_gauss_BKG, plotFlag);
     [target_p, target_reconstructedImage ] = SloppyNoise(im_height, im_width, sigma_tar, w1_wn_tar, w2_gauss_tar, plotFlag);
@@ -74,78 +72,20 @@ for ndx = 1:5
         fprintf('ERROR: Please specify the target shape.')
     end
     
-%     imshow(disk_mask)
-
     % 3/ Stimulus: Convert reconstructed images to grayscale images
     BKG_grayscImage    = mat2gray(BKG_reconstructedImage);
     target_grayscImage = mat2gray(target_reconstructedImage);
     
-    %     figure, imshow(BKG_grayscImage)
-    %     figure, imshow(target_grayscImage)
-    
-    %     Stimulus_Image = BKG_grayscImage;
-    %     Stimulus_Image(disk_mask) = target_grayscImage(disk_mask);
-    
     % Assemble both background and target images to build the stimulus
     Stimulus_Image = BKG_reconstructedImage;
     Stimulus_Image(disk_mask) = target_reconstructedImage(disk_mask);
-    %     figure,
-    %     imshow(Stimulus_Image)
     Stimulus_Image_grayscImage = mat2gray(Stimulus_Image);
-    
-%     close all
-    
+        
     figure,
     img = imshow(Stimulus_Image_grayscImage);
     
-    cd('C:\Users\preinstalled\Documents\PostDoc_Doc\figures\');
+    cd('yourfolder\figures\');
     saveas(img, sprintf('Fig-3BKG-2target_size60_ang_blob_%d.png',ndx));
     
     close
 end
-
-
-
-
-
-%%
-
-% % if targets are circles
-% X = randi([0 im_height],1);
-% Y = randi([0 im_height],1);
-% CentreCoord = [X Y];
-% radius = 10;
-% circulo = viscircles(CentreCoord, radius, 'EnhanceVisibility', false, 'Color',[0.5 0.5 0.5], 'LineWidth', 0.5);
-% xd = circulo.Children(1).XData(1:end-1); %leave out the nan
-% yd = circulo.Children(1).YData(1:end-1);
-% hold on
-% fill(xd, yd, [0.5 0.5 0.5], 'EdgeColor',[.5 .5 .5]);
-
-
-%
-% PSD is simply the amplitude of FFT squared and divided by the FFT bin width deltaF.
-% If a window function isa applied then
-% PSD(fk) = |X(fk)|^2 / (Window BW x deltaF)
-
-% 2D fft example
-% P = peaks(20);
-% X = repmat(P,[5 10]);
-% imagesc(X)
-% Y = fft2(X);
-% imagesc(abs(fftshift(Y)))
-
-% img = imread('dancing.jpg');
-% [im_height, im_width] = size(img);
-% imshow(img)
-
-% Compute its 2D-fft + power spectrum
-% normalise + shift zero-frequency component to center of spectrum
-% imgf      = fftshift(fft2(img));
-% imgfp     = (abs(imgf)/(im_height*im_width)).^2;
-% img_phase = angle(imgf);
-% imagesc(imgfp)
-
-% % Plot radially averaged power spectral density (PSD)
-% res          = round(im_widtht/2); % res = spatial resolution ofr the PSD plot
-% [logX, logY] = radialPsd2d(img(:,:,1),res, 0); % compute the PSD plot
-% p            = polyfit(logX, logY, 1); % compute the Fourier slope
