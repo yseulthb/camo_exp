@@ -15,19 +15,3 @@ Xint = round(x) + centerX;
 Yint = round(y) + centerY;
 bw   = poly2mask(Xint,Yint,im_height,im_width);
 
-% imshow(bw)
-% kbis = mean(k) * ones(1, size(k,2));
-
-% figure
-% hold on
-% polar(Th,k, 'b')
-% polar(Th, kbis, 'r')
-% hold off
-
-% Xint = round(x) + abs(min(round(x)));
-% Yint = round(y) + abs(min(round(y)));
-
-% figure,
-% h = fill(Xint, Yint, 'r');
-
-% bw = poly2mask(Xint,Yint,100,100);
