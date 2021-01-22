@@ -9,4 +9,4 @@ Fourier slope of targets: -1; -2; -3
 Size of images: 650 x 650 <br>
 Size of targets: 20 x 20 ; 40 x 40 ; 60 x 60
 
-Shape of the target: circles or angular blobs
+Shape of the target: circles or angular blobs or round blobs

@@ -22,12 +22,12 @@ im_width  = 650;
 plotFlag  = 0; % show the plot: 1 yes; 0 no
 
 sigma_BKG     = 65; % standard deviation of the Gaussian filter
-w1_wn_BKG     = 1; % weight of the white noise
+w1_wn_BKG     = 1; % weight of the white noise (remains unchanged)
 w2_gauss_BKG  = 42; % weight of the Gaussian filter
 
-% im_dim: 650*650; sigma: 5;    w1: 1; w2: 26 => slope of approx -1
-% im_dim: 650*650; sigma: 15;   w1: 1; w2: 26 => slope of approx -2
-% im_dim: 650*650; sigma: 65;   w1: 1; w2: 42 => slope of approx -2.9
+% im_dim: 650*650; sigma: 5;  w2: 26 => slope of approx -1
+% im_dim: 650*650; sigma: 15; w2: 26 => slope of approx -2
+% im_dim: 650*650; sigma: 65; w2: 42 => slope of approx -2.9
 
 
 % 2/ Target: Determine the inner content of the target
@@ -35,17 +35,17 @@ w2_gauss_BKG  = 42; % weight of the Gaussian filter
 % add it to the background image
 
 sigma_tar     = 12; % standard deviation of the Gaussian filter
-w1_wn_tar     = 1; % weight of the white noise
+w1_wn_tar     = 1; % weight of the white noise (remains unchanged)
 w2_gauss_tar  = 45; % weight of the Gaussian filter
-% im_dim: 650*650; sigma: 5;  w1: 1; w2: 22 => slope of approx -1
-% im_dim: 650*650; sigma: 12; w1: 1; w2: 45 => slope of approx -2
-% im_dim: 650*650; sigma: 24; w1: 1; w2: 65 => slope of approx -2.9
+% im_dim: 650*650; sigma: 5;  w2: 22 => slope of approx -1
+% im_dim: 650*650; sigma: 12; w2: 45 => slope of approx -2
+% im_dim: 650*650; sigma: 24; w2: 65 => slope of approx -2.9
 
 % Create a disk mask
 target_height = 60;
 target_width  = 60;
 
-% Select the target shape: 'disk' or 'ang_blob'
+% Select the target shape: 'disk' or 'ang_blob' or 'round_blob'
 target_shape = 'ang_blob';
 
 %% Call the function to create a white noise image and alter its slope using
@@ -68,6 +68,9 @@ for ndx = 1:5
     elseif strcmp(target_shape, 'ang_blob')
         bw = angular_blob(centerX, centerY, im_height,im_width);
         disk_mask = bw;
+    elseif strcmp(target_shape, 'round_blob')
+        blob_mask = round_blob(centerX, centerY, im_height, im_width);
+        disk_mask = blob_mask;
     else
         fprintf('ERROR: Please specify the target shape.')
     end
