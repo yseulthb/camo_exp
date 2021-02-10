@@ -25,9 +25,11 @@ sigma_BKG     = 65; % standard deviation of the Gaussian filter
 w1_wn_BKG     = 1; % weight of the white noise (remains unchanged)
 w2_gauss_BKG  = 42; % weight of the Gaussian filter
 
-% im_dim: 650*650; sigma: 5;  w2: 26 => slope of approx -1
-% im_dim: 650*650; sigma: 15; w2: 26 => slope of approx -2
-% im_dim: 650*650; sigma: 65; w2: 42 => slope of approx -2.9
+% im_dim: 650*650; sigma: 5;    w2: 26 => slope of approx -1
+% im_dim: 650*650; sigma: 15;   w2: 26 => slope of approx -2
+% im_dim: 650*650; sigma: 65;   w2: 42 => slope of approx -2.9
+% im_dim: 250*250; sigma: 6.5;  w2: 26 => slope of approx -2
+% im_dim: 450*450; sigma: 10.5; w2: 26 => slope of approx -2
 
 
 % 2/ Target: Determine the inner content of the target
@@ -37,7 +39,8 @@ w2_gauss_BKG  = 42; % weight of the Gaussian filter
 sigma_tar     = 12; % standard deviation of the Gaussian filter
 w1_wn_tar     = 1; % weight of the white noise (remains unchanged)
 w2_gauss_tar  = 45; % weight of the Gaussian filter
-% im_dim: 650*650; sigma: 5;  w2: 22 => slope of approx -1
+% im_dim: 650*650; sigma:  2; w2: 18 => slope of approx -0.5
+% im_dim: 650*650; sigma:  5; w2: 22 => slope of approx -1
 % im_dim: 650*650; sigma: 7.2; w2: 45 => slope of approx -1.5
 % im_dim: 650*650; sigma: 12; w2: 45 => slope of approx -2
 % im_dim: 650*650; sigma: 20; w2: 45 => slope of approx -2.5
@@ -49,6 +52,8 @@ target_width  = 60;
 
 % Select the target shape: 'disk' or 'ang_blob' or 'round_blob'
 target_shape = 'ang_blob';
+% Select the background mode: matching (gaussian noise) or neutral (gray)
+background_mode = 'BK_matching'; % 'BK_matching' // 'gray'
 
 %% Call the function to create a white noise image and alter its slope using
 % a Gaussian filter. It returns the value of the Fourier slope of the modified
@@ -77,36 +82,51 @@ for ndx = 1:5
         fprintf('ERROR: Please specify the target shape.')
     end
 
-    % SMOOTHING
+ % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+    % IF SMOOTHING
     filter_img            = zeros(im_height);
     filter_img(disk_mask) = 1;
-    Target_filter      = imgaussfilt(filter_img, 2); % 2.5
-    Target_filter      = Target_filter - min(min(Target_filter)); 
-    Target_filter      = Target_filter./ ( max(max(Target_filter))); % Gaussian filter
-
+    Target_filter         = imgaussfilt(filter_img, 0.5); % 2.5
+    Target_filter         = Target_filter - min(min(Target_filter));
+    Target_filter         = Target_filter./ ( max(max(Target_filter))); % Gaussian filter
+    
     BKG_filter            = - Target_filter +1 ;
+    
+    pixel_nb_target(ndx) = length(find(Target_filter>0));
     
     Stimulus_Image = BKG_reconstructedImage.* BKG_filter;
     Stimulus_Image_sum = BKG_reconstructedImage .* BKG_filter + target_reconstructedImage .* Target_filter;
-    StimGS = mat2gray(Stimulus_Image_sum); 
-    figure, 
-    img = imshow(StimGS);
-
-
-    % 3/ Stimulus: Convert reconstructed images to grayscale images
-    %BKG_grayscImage    = mat2gray(BKG_reconstructedImage);
-    %target_grayscImage = mat2gray(target_reconstructedImage);
-    
-    % Assemble both background and target images to build the stimulus
-    %Stimulus_Image = BKG_reconstructedImage;
-    %Stimulus_Image(disk_mask) = target_reconstructedImage(disk_mask);
-    %Stimulus_Image_grayscImage = mat2gray(Stimulus_Image);
+    StimGS = mat2gray(Stimulus_Image_sum);
         
-    %figure,
-    %img = imshow(Stimulus_Image_grayscImage);
+    figure,
+    img = imshow(StimGS);
+       
     
-    cd('yourfolder\figures\');
-    saveas(img, sprintf('Fig-XBKG-Xtarget_sizeX_ang_blob_%d.png',ndx));
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% %         % IF NO SMOOTHING
+% %         pixel_nb_target(ndx) = length(find(disk_mask>0));
+% %     
+% %         % 3/ Stimulus: Convert reconstructed images to grayscale images
+% %         BKG_grayscImage    = mat2gray(BKG_reconstructedImage);
+% %         target_grayscImage = mat2gray(target_reconstructedImage);
+% %      
+% %         % Assemble both background and target images to build the stimulus
+% %         Stimulus_Image = BKG_reconstructedImage ;
+% %         Stimulus_Image(disk_mask) = target_reconstructedImage(disk_mask);
+% %         %  figure, imshow(Stimulus_Image)
+% %         Stimulus_Image_grayscImage = mat2gray(Stimulus_Image);
+% %         
+% %         if strcmp(background_mode, 'gray')
+% %             Stimulus_Image_grayscImage(disk_mask == 0) = 0.5;
+% %         end
+% %     
+% %         figure,
+% %         img = imshow(Stimulus_Image_grayscImage);
+    
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+    
+    cd('C:\Users\preinstalled\Documents\PostDoc_Doc\figures\');
+    saveas(img, sprintf('Fig-2BKG-2-25target_biggersize_angular_blob_blurryEdges0-5_%d.png',ndx));
     
     close
 end
