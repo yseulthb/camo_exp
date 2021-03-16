@@ -15,4 +15,5 @@ Fourier slope for the targets: -0.5; -1.5; -2.5; -3.5
 Edges are blurred to limit edge effect via a Gaussian filter. Standard deviation of the kernel: 1 or 1.5
 Images with no blur are also available.
 
-Simuli have the same mean luminance value (pixel intensity): 128 (+/-32) - similar to the lumMatch function from the Matlab's SHINE toolbox (Willenbockel et al., 2010)
+Simuli have the same mean luminance value (pixel intensity): 128 (+/-32) <br>
+(cf the lumMatch function from the Matlab's SHINE toolbox (Willenbockel et al., 2010))
