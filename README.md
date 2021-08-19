@@ -4,7 +4,7 @@ Stimuli = white noise x Gaussian filter <br>
 Made of two parts: a background and a target. The location of the target is randomised across the background space (solo condition) or centred (2-AFC conditions). Once both parts are assembled, the resulting image is grayscaled (conversion to an intensity image). 
 
 Image size: 650 x 650 (solo condition) or 650 x 1300 (2-AFC conditions)<br>
-Target size: 120 x 120
+Target size: 160 x 160
 
 Shape of the target: circles
 
