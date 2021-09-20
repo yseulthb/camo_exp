@@ -9,8 +9,9 @@ Target size: 160 x 160
 Shape of the target: circles
 
 Fourier slope for the backgrounds: -1; -2; -3 <br>
-Fourier slope for the targets: -0.5; -1.5; -2.5; -3.5
-<!--Fourier slope of targets: -0.5; -0.75; -1; -1.25; -1.5; -1.75; -2; -2.25; -2.5; -2.75; -3; -3.25-->
+Fourier slope for the targets: -0.5; -1.5; -2.5; -3.5 <br>
+Slope difference (background - target): +/- 0.25, +/- 0.5, +/- 0.75
+
 
 Edges are blurred to limit edge effect via a Gaussian filter. Standard deviation of the kernel: 0.5
 
